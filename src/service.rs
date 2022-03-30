@@ -17,13 +17,13 @@ pub struct RedirectSchemeService<S> {
 type ReadyResult<R, E> = Ready<Result<R, E>>;
 
 impl<S> Service<ServiceRequest> for RedirectSchemeService<S>
-    where
-        S: Service<ServiceRequest, Response = ServiceResponse, Error = Error>,
-        S::Future: 'static,
+where
+    S: Service<ServiceRequest, Response = ServiceResponse, Error = Error>,
+    S::Future: 'static,
 {
     type Response = ServiceResponse;
     type Error = Error;
-    type Future =  Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
+    type Future = Either<S::Future, ReadyResult<Self::Response, Self::Error>>;
 
     actix_service::forward_ready!(service);
 
@@ -61,8 +61,8 @@ impl<S> Service<ServiceRequest> for RedirectSchemeService<S>
                 } else {
                     HttpResponse::MovedPermanently()
                 }
-                    .insert_header((http::header::LOCATION, url))
-                    .finish()
+                .insert_header((http::header::LOCATION, url))
+                .finish(),
             )))
         }
     }

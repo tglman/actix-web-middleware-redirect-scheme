@@ -15,11 +15,12 @@ use futures::future::{ok, Ready};
 /// use actix_web::{App, web, HttpResponse};
 /// use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 ///
+/// async fn index() -> HttpResponse {
+///     HttpResponse::Ok().content_type("text/plain").body("Always HTTPS!")
+/// }
 /// App::new()
 ///     .wrap(RedirectSchemeBuilder::new().temporary().build())
-///     .route("/", web::get().to(|| HttpResponse::Ok()
-///                                     .content_type("text/plain")
-///                                     .body("Always HTTPS!")));
+///     .route("/", web::get().to(index));
 /// ```
 #[derive(Default, Clone)]
 pub struct RedirectScheme {
@@ -45,11 +46,13 @@ impl RedirectScheme {
     /// use actix_web::{App, web, HttpResponse};
     /// use actix_web_middleware_redirect_scheme::RedirectScheme;
     ///
+    /// async fn index() -> HttpResponse {
+    ///     HttpResponse::Ok().content_type("text/plain").body("Always HTTPS!")
+    /// }
+    ///
     /// App::new()
     ///     .wrap(RedirectScheme::simple(false))
-    ///     .route("/", web::get().to(|| HttpResponse::Ok()
-    ///                                     .content_type("text/plain")
-    ///                                     .body("Always HTTPS on non-default ports!")));
+    ///     .route("/", web::get().to(index));
     /// ```
     pub fn simple(https_to_http: bool) -> Self {
         RedirectScheme {
@@ -69,11 +72,13 @@ impl RedirectScheme {
     /// use actix_web::{App, web, HttpResponse};
     /// use actix_web_middleware_redirect_scheme::RedirectScheme;
     ///
+    /// async fn index() -> HttpResponse {
+    ///     HttpResponse::Ok().content_type("text/plain").body("Always HTTPS on non-default-ports!")
+    /// }
+    ///
     /// App::new()
     ///     .wrap(RedirectScheme::with_replacements(false, &[(":8080", ":8443")]))
-    ///     .route("/", web::get().to(|| HttpResponse::Ok()
-    ///                                     .content_type("text/plain")
-    ///                                     .body("Always HTTPS on non-default ports!")));
+    ///     .route("/", web::get().to(index));
     /// ```
     pub fn with_replacements<S: ToString>(https_to_http: bool, replacements: &[(S, S)]) -> Self {
         let replacements = replacements
@@ -89,9 +94,9 @@ impl RedirectScheme {
 }
 
 impl<S> Transform<S, ServiceRequest> for RedirectScheme
-    where
-        S: Service<ServiceRequest, Response = ServiceResponse<BoxBody>, Error = Error>,
-        S::Future: 'static,
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<BoxBody>, Error = Error>,
+    S::Future: 'static,
 {
     type Response = ServiceResponse<BoxBody>;
     type Error = Error;
@@ -110,5 +115,3 @@ impl<S> Transform<S, ServiceRequest> for RedirectScheme
         })
     }
 }
-
-

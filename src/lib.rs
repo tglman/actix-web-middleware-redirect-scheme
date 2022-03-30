@@ -8,11 +8,12 @@
 //! use actix_web::{App, web, HttpResponse};
 //! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 //!
+//! async fn index() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Temporary to HTTP!")
+//! }
 //! App::new()
 //!     .wrap(RedirectSchemeBuilder::new().https_to_http().temporary().build())
-//!     .route("/", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Temporary to HTTP!")));
+//!     .route("/", web::get().to(index));
 //! ```
 //!
 //! ### Usage HTTP -> HTTPS
@@ -27,11 +28,12 @@
 //! use actix_web::{App, web, HttpResponse};
 //! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 //!
+//! async fn index() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Always HTTPS!")
+//! }
 //! App::new()
 //!     .wrap(RedirectSchemeBuilder::new().build())
-//!     .route("/", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Always HTTPS!")));
+//!     .route("/", web::get().to(index));
 //! ```
 //!
 //! You can switch on/off of redirections according to your settings:
@@ -43,11 +45,13 @@
 //! let mut use_redir = true;
 //! // ...
 //!
+//! async fn index() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Maybe HTTPS")
+//! }
+//!
 //! App::new()
 //!     .wrap(RedirectSchemeBuilder::new().enable(use_redir).build())
-//!     .route("/", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Maybe HTTPS")));
+//!     .route("/", web::get().to(index));
 //! ```
 //!
 //! By default, the middleware uses answer code "301 Moved Permanently", but you can use "307 Temporary Redirect":
@@ -56,11 +60,13 @@
 //! use actix_web::{App, web, HttpResponse};
 //! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 //!
+//! async fn index() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Always HTTPs!")
+//! }
+//!
 //! App::new()
 //!     .wrap(RedirectSchemeBuilder::new().temporary().build())
-//!     .route("/", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Always HTTPS!")));
+//!     .route("/", web::get().to(index));
 //! ```
 //!
 //! This is equivalent:
@@ -80,11 +86,13 @@
 //! use actix_web::{App, web, HttpResponse};
 //! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 //!
+//! async fn index() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Always HTTPS on non-default ports!")
+//! }
+//!
 //! App::new()
 //!     .wrap(RedirectSchemeBuilder::new().replacements(&[(":8080", ":8443")]).build())
-//!     .route("/", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Always HTTPS on non-default ports!")));
+//!     .route("/", web::get().to(index));
 //! ```
 //!
 //! ### Usage HTTPS -> HTTP
@@ -99,11 +107,12 @@
 //! use actix_web::{App, web, HttpResponse};
 //! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 //!
+//! async fn index() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Always HTTP!")
+//! }
 //! App::new()
 //!     .wrap(RedirectSchemeBuilder::new().https_to_http().build())
-//!     .route("/", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Always HTTP!")));
+//!     .route("/", web::get().to(index));
 //! ```
 //!
 //! This is equivalent:
@@ -123,11 +132,13 @@
 //! use actix_web::{App, web, HttpResponse};
 //! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 //!
+//! async fn index() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Always HTTP on non-default-ports!")
+//! }
+//!
 //! App::new()
 //!     .wrap(RedirectSchemeBuilder::new().https_to_http().replacements(&[(":8443", ":8080")]).build())
-//!     .route("/", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Always HTTP on non-default ports!")));
+//!     .route("/", web::get().to(index));
 //! ```
 //!
 //! ### Usage ignore paths
@@ -139,14 +150,16 @@
 //! use actix_web::{App, web, HttpResponse};
 //! use actix_web_middleware_redirect_scheme::RedirectSchemeBuilder;
 //!
+//! async fn index() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Always HTTPS")
+//! }
+//! async fn ignore_redirect() -> HttpResponse {
+//!     HttpResponse::Ok().content_type("text/plain").body("Ignore the redirect!")
+//! }
 //! App::new()
 //!     .wrap(RedirectSchemeBuilder::new().ignore_path("/.well-known/acme-challenge/").build())
-//!     .route("/", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Always HTTPS port")))
-//!     .route("/.well-known/acme-challenge/*", web::get().to(|| HttpResponse::Ok()
-//!                                     .content_type("text/plain")
-//!                                     .body("Ignore the redirect")));
+//!     .route("/", web::get().to(index))
+//!     .route("/.well-known/acme-challenge/*", web::get().to(ignore_redirect));
 //! ```
 
 pub mod builder;
